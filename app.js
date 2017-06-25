@@ -4,18 +4,15 @@
 	var track_urls = [];
 
 	var client_id = '4d78f4f5135944c9b2f05bcabff6b557';
-	var redirect_uri = 'http://localhost/callback.html';
+	var redirect_uri = null
+	if (window.location.hostname == 'localhost') {
+		redirect_uri = 'http://localhost/callback.html';
+	} else {
+		redirect_uri = 'https://atran39.github.io/callback.html'
+	}
 
 	var getAccessToken = function() {
 		return location.hash.match(/^\#access_token=(.+)&token_type=(.+)&expires_in=(\d+)$/)[1];
-	}
-
-	var toggleButton = function(id) {
-		if ($('#'+id).disabled == true) {
-			$('#'+id).disabled = false;
-		} else {
-			$('#'+id).disabled = true;
-		}
 	}
 
 	var splitText = function(inputtext) {
@@ -110,7 +107,7 @@
 					// timeout
 					console.log('errorThrown:',errorThrown);
 					if (errorThrown == 'Unauthorized') {
-						window.location.replace('http://localhost/index.html');
+						window.location.replace(redirect_uri);
 					} else if (errorThrown == 'Too Many Requests') {
 						// time delay
 						console.log('too');
@@ -159,14 +156,14 @@
 					},
 					error: function(r) {
 						console.log(r);
-						window.location.replace('http://localhost/index.html');
+						window.location.replace(redirect_uri);
 					}
 				});
 			},
 			error: function(r) {
 				// timeout
 				console.log(r);
-				window.location.replace('http://localhost/index.html');
+				window.location.replace(redirect_uri);
 			}
 		});
 		console.log('username: ',username);
@@ -196,7 +193,7 @@
 				},
 				error: function(r) {
 					console.log(r);
-					window.location.replace('http://localhost/index.html');
+					window.location.replace(redirect_uri);
 				}
 			});
 			curr_index += 100;

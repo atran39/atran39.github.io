@@ -20,7 +20,12 @@
 			var client_id = '4d78f4f5135944c9b2f05bcabff6b557';
 			var response_type = 'token';
 			var scope = 'playlist-read-private playlist-modify-private playlist-modify-public';
-			var redirect_uri = 'http://localhost/callback.html';
+			var redirect_uri = null
+			if (window.location.hostname == 'localhost') {
+				redirect_uri = 'http://localhost/callback.html';
+			} else {
+				redirect_uri = 'https://atran39.github.io/callback.html'
+			}
 			var url = 'https://accounts.spotify.com/authorize?client_id=' + client_id
 				+ '&redirect_uri=' + encodeURIComponent(redirect_uri) + '&response_type=' + response_type
 				+ '&scope=' + encodeURIComponent(scope);
