@@ -1,0 +1,49 @@
+<html>
+	<head>
+		<!-- jquery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+		<script type="text/javascript" src="app.js"></script>
+	</head>
+
+	<script>
+		function login() {
+			var client_id = '4d78f4f5135944c9b2f05bcabff6b557';
+			var response_type = 'token';
+			var scope = 'playlist-read-private playlist-modify-private playlist-modify-public';
+			var redirect_uri = 'http://localhost/callback.html';
+			var url = 'https://accounts.spotify.com/authorize?client_id=' + client_id
+				+ '&redirect_uri=' + encodeURIComponent(redirect_uri) + '&response_type=' + response_type
+				+ '&scope=' + encodeURIComponent(scope);
+			console.log("login");
+			var w = window.open(url, '_self');
+		}
+	</script>
+	<body>
+		<div class="jumbotron">
+			<div class="container">
+				<h1>Spotify Playlist Maker</h1>
+				<p>
+					Turn your favorite list of songs into a playlist!
+				</p>
+			</div>
+		</div>
+
+		<div class="container">
+			<!-- Example row of columns -->
+			<div class="row text-center">
+				<h3>Login to start Playmaker!</h3>
+				<button class="btn btn-lg btn-primary btn-success" onclick="login();">Login to Spotify</button>
+			</div>
+		</div>
+	</body>
+</html>

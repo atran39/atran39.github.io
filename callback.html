@@ -1,0 +1,52 @@
+<html>
+<head>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script type="text/javascript" src="app.js"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</style>
+</head>
+<body onload="startApp()">
+
+	<!-- Main jumbotron for a primary marketing message or call to action -->
+	<div class="jumbotron">
+		<div class="container">
+			<h2>Spotify Playlist Maker</h2>
+			<p>
+				Turn your favorite list of songs into a playlist!
+			</p>
+		</div>
+	</div>
+
+	<div class="container">
+		<!-- Example row of columns -->
+		<div class="row">
+			<div class="col-md-6">
+				<div class="form-group">
+				  <label for="plName">Playlist Name:</label>
+				  <input type="text" class="form-control" value="Playlist Name" id="plName">
+				</div>
+				<div class="form-group">
+					<label for="playlist">Songs, Artists</label>
+					<textarea class="form-control" id="alltext" rows="10" placeholder="Closer, The Chainsmokers"></textarea>
+				</div>
+				<p>
+					<button class="btn btn-lg btn-primary" id="create">Create a Spotify playlist!</button>
+				</p>
+				<p>
+					<button class="btn btn-lg btn-primary btn-success" id="upload">Upload to Spotify</button>
+				</p>
+			</div>
+			<div class="col-md-6">
+				<h2>Spotify Playlist</h2>
+				<div id="tracks"></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
