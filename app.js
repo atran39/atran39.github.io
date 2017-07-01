@@ -2,29 +2,23 @@
 
 	var pl_tracks = [];
 	var track_urls = [];
+	var pl_length = -1;
 
-	var client_id = '4d78f4f5135944c9b2f05bcabff6b557';
+	var client_id = '4d78f4f5135944c9b2f05bcabff6b557'; // pls dont steal
 	var redirect_uri = null
 	if (window.location.hostname == 'localhost') {
-		redirect_uri = 'http://localhost/callback.html';
+		redirect_uri = 'http://localhost/index.html';
 	} else {
-		redirect_uri = 'https://atran39.github.io/callback.html'
+		redirect_uri = 'https://atran39.github.io/index.html'
 	}
 
 	var getAccessToken = function() {
 		return location.hash.match(/^\#access_token=(.+)&token_type=(.+)&expires_in=(\d+)$/)[1];
 	}
 
-	var splitText = function(inputtext) {
-		var words = inputtext
-		.split(/[\n\r]/)
-		// .map(function(w) { return w.replace(/^\d+ /,'').replace(/[\d,]+$/,'')}) // rm rank, count
-		.map(function(w) { return w.trim().replace(/^[.,-]+/,'').replace(/[.,-]+$/g,''); })
-		.filter(function(w) { return (w.length > 0); });
-		return words;
-	}
 
 	var addToQueue = function() {
+		// process textarea, create relevant search urls
 		var new_urls = [];
 
 		pl_name = $('#plName').val().trim();
@@ -32,44 +26,53 @@
 			pl_name = new Date($.now())
 		}
 
-		var words = splitText($('#alltext').val()); // words is song, artist combination
+		var words = $('#alltext').val().split(/[\n\r]/).filter(function(w) {return (w.length > 0);});
 
 		words.forEach(function(curr) {
 			var url = '';
 
 			if (curr.match(/\t/)) {
 				curr = curr.split(/[\t]/);
-			} else {
-				curr = curr.split(/,/);
-			}
-			// console.log(curr);
-			if (curr.length == 3) {
-				// 538 playlist
-				// console.log("error on", curr);
-				if (curr[0].match(/^\d$/)) {
-					// Wedding playlist
-					url = 'https://api.spotify.com/v1/search?q='
-					+ encodeURIComponent(curr[1]) + '&type=track&limit=1';
-				} else {
-					// Workout playlist
-					url = 'https://api.spotify.com/v1/search?q='
-					+ encodeURIComponent(curr[0] + ' ' + curr[1]) + '&type=track&limit=1';
+
+				if (curr.length >= 3) {
+					// 538 playlist
+					if (curr[2].match(/^\d\d?$/)) {
+						// Wedding playlist
+						url = 'https://api.spotify.com/v1/search?q='
+						+ encodeURIComponent(curr[1]) + '&type=track&limit=1';
+					} else {
+						// Workout playlist
+						url = 'https://api.spotify.com/v1/search?q='
+						+ encodeURIComponent(curr[0] + ' ' + curr[1]) + '&type=track&limit=1';
+					}
 				}
 			} else {
-				// CSV
+				// regular formatting
 				url = 'https://api.spotify.com/v1/search?q='
-				+ encodeURIComponent(curr[0] + ' ' + curr[1]) + '&type=track&limit=1';
+				+ encodeURIComponent(curr) + '&type=track&limit=1';
 			}
 
 			new_urls.push(url);
 		});
 
+		// store uls array in track_urls
+		pl_length = new_urls.length;
 		return track_urls = new_urls;
 	}
 
 	var createPl = function (access_token,track_html) {
+		// recursively perform http requests to obtain track uris
 		if (track_urls.length > 0) {
 			url = track_urls[0];
+
+			// progress bar
+			var valuenow = (pl_length - track_urls.length)/pl_length*100;
+			$('#progress').html(
+				'<div class="progress progress-striped active">' +
+				'<div class="progress-bar" role="progressbar" aria-valuenow=\"' + valuenow + '\" aria-valuemin="0" aria-valuemax="100" style="width:' + valuenow + '%">' +
+			 	'</div>' +
+				'</div>'
+			);
 
 			$.ajax({
 				url: url,
@@ -78,17 +81,14 @@
 					'Authorization': 'Bearer ' + access_token
 				},
 				success: function(r) {
-					// console.log('got track', r);
-					// track_uris.shift();
 					if (jQuery.isEmptyObject(r.tracks.items)) {
-						console.log('fail to get track info', r)
 						// not found on spotify
+						console.log('fail to get track info', r)
 						name = url.replace(/^https:\/\/api\.spotify\.com\/v1\/search\?q=/, '').replace(/&type=track&limit=1$/,'');
 						track_html += '<div class="media bg-danger">No match found for "' + decodeURIComponent(name)+ '"</div>\n';
 						track_urls.shift();
 					} else {
-						// console.log('found track', r);
-						// console.log(r.tracks.items[0].uri);
+						// track_html is a media object that visually displays obtained tracks
 						track_html += '<div class="media">' +
 						'<a class="pull-left" href="#"><img class="media-object" src="' + r.tracks.items[0].album.images[r.tracks.items[0].album.images.length - 1].url + '" /></a>' +
 						'<div class="media-body">' +
@@ -104,20 +104,21 @@
 					createPl(access_token,track_html);
 				},
 				error: function(jqXHR,textStatus,errorThrown) {
-					// timeout
+					// timeout, requires new login session
 					console.log('errorThrown:',errorThrown);
-					if (errorThrown == 'Unauthorized') {
-						window.location.replace(redirect_uri);
-					} else if (errorThrown == 'Too Many Requests') {
-						// time delay
-						console.log('too');
-					}
+					window.location.replace(redirect_uri);
 				}
 			});
 		} else {
-			// reenable button
+			// when finished, clean up button behavior
+			$('#progress').html('');
+			$('#upload').prop('disabled',false);
 			$('#create').prop('disabled',false);
-			//console.log('able');
+
+			document.getElementById('upload').textContent = ('Upload to Spotify');
+			$('#upload').off('click');
+			$('#upload').click(uploadClick);
+
 			console.log('Creation finished');
 		}
 	}
@@ -126,7 +127,8 @@
 		var username = null;
 		var pl_id = null;
 
-		console.log('get username');
+		$('#upload').prop('disabled',true);
+
 		$.ajax({
 			url: 'https://api.spotify.com/v1/me',
 			dataType: 'json',
@@ -135,9 +137,7 @@
 			},
 			success: function(r) {
 				username = r.id;
-				console.log('create playlist');
 				var url = 'https://api.spotify.com/v1/users/' + encodeURIComponent(username) + '/playlists';
-				console.log(url);
 				$.ajax(url, {
 					method: 'POST',
 					data: JSON.stringify({
@@ -152,7 +152,9 @@
 					success: function(r) {
 						console.log('create playlist response', r);
 						pl_id = r.id;
-						addTrack(username,pl_id,access_token);
+						pl_url = r.external_urls.spotify;
+						console.log(pl_url);
+						addTrack(username,pl_id,access_token,pl_url);
 					},
 					error: function(r) {
 						console.log(r);
@@ -166,15 +168,15 @@
 				window.location.replace(redirect_uri);
 			}
 		});
-		console.log('username: ',username);
 	}
 
-	var addTrack = function(user_id,playlist_id,access_token) {
+	var addTrack = function(user_id,playlist_id,access_token,playlist_url) {
 		var curr_index = 0;
 		var url = 'https://api.spotify.com/v1/users/' + user_id +
 		'/playlists/' + playlist_id +
 		'/tracks'
 		do {
+			// only a max of 100 tracks can be added for any one http addtrack requests
 			var data = '"uris": ' + 'position' + curr_index
 			$.ajax({
 				url: url,
@@ -182,18 +184,21 @@
 				data: JSON.stringify({
 					'uris': pl_tracks.slice(curr_index,curr_index+100),
 					'position': curr_index
-				}), //JSON.stringify(tracks),
+				}),
 				dataType: 'text',
 				headers: {
 					'Authorization': 'Bearer ' + access_token,
 					'Content-Type': 'application/json'
 				},
 				success: function(r) {
-					console.log('added tracks response', r);
+				 	document.getElementById('upload').textContent = ('Done! View on Spotify');
+					$('#upload').off('click');
+					$('#upload').click(function () {window.open(playlist_url)});
+					$('#upload').prop('disabled',false);
 				},
 				error: function(r) {
 					console.log(r);
-					window.location.replace(redirect_uri);
+					alert('Error! Please create a playlist before uploading')
 				}
 			});
 			curr_index += 100;
@@ -201,24 +206,35 @@
 		console.log('done adding tracks');
 	}
 
-	exports.startApp = function() {
-		console.log('start app.');
+	var createClick = function() {
 		var access_token = getAccessToken();
+		pl_tracks = [];
 
-		$('#create').click(function() {
-			console.log('disable');
-			$('#create').prop('disabled',true);
-			var track_html = '';
-			addToQueue();
-			createPl(access_token,track_html);
-		});
-		$('#upload').click(function() {
-			// doLogin();
-			console.log('upload');
-			var pl_name = $('#plName').val().trim();
-			uploadPlaylist(access_token,pl_name);
-		});
-
+		$('#progress').html(
+			'<div class="progress progress-striped active">' +
+			'<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
+			'</div>' +
+			'</div>'
+		);
+		$('#create').prop('disabled',true);
+		addToQueue();
+		console.log(track_urls);
+		createPl(access_token,'');
 	}
 
+	var uploadClick = function() {
+		console.log('upload');
+		var pl_name = $('#plName').val().trim();
+		var access_token = getAccessToken();
+		uploadPlaylist(access_token,pl_name);
+	}
+
+	exports.startApp = function() {
+		console.log('starting playmaker');
+
+		$('#upload').prop('disabled',true);
+
+		$('#create').click(createClick);
+		$('#upload').click(uploadClick);
+	}
 })(window);

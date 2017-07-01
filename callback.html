@@ -1,30 +1,27 @@
 <html>
 <head>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="app.js"></script>
+	<meta charset="UTF-8">
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="app.js"></script>
 
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-</style>
 </head>
 <body onload="startApp()">
 
-	<!-- Main jumbotron for a primary marketing message or call to action -->
-	<div class="jumbotron">
-		<div class="container">
-			<h2>Spotify Playlist Maker</h2>
-			<p>
-				Turn your favorite list of songs into a playlist!
-			</p>
+	<div class="container">
+		<div class="jumbotron">
+			<h1>Spotify Playmaker</h1>
+			<h3>Turn your favorite list of songs into a playlist!</h3>
+			<p><i>Check me out on GitHub <a href="https://github.com/atran39">@atran39</a></i></p>
 		</div>
 	</div>
 
 	<div class="container">
-		<!-- Example row of columns -->
 		<div class="row">
 			<div class="col-md-6">
 				<div class="form-group">
@@ -33,8 +30,9 @@
 				</div>
 				<div class="form-group">
 					<label for="playlist">Songs, Artists</label>
-					<textarea class="form-control" id="alltext" rows="10" placeholder="Closer, The Chainsmokers"></textarea>
+					<textarea class="form-control" rows="10" placeholder="Closer, The Chainsmokers" style="max-width:100%;" id="alltext"></textarea>
 				</div>
+				<div id="progress"></div>
 				<p>
 					<button class="btn btn-lg btn-primary" id="create">Create a Spotify playlist!</button>
 				</p>
